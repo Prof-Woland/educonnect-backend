@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://educonnect-frontend-five.vercel.app/',
+    origin: 'https://educonnect-frontend-five.vercel.app',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   });
