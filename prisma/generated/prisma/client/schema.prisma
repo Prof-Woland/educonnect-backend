@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "generated/prisma/client"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
+  output        = "generated/prisma/client"
 }
 
 datasource db {
@@ -43,10 +44,63 @@ model Courses {
 
   detailDescription String
 
+  parts   Modules[]
+  teacher String
+
+  status String @default("published")
+
+  users Auth[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+}
+
+model PendingCourses {
+  id String @id() @default(uuid())
+
+  name        String
+  description String
+  cost        Decimal
+
+  time          String
+  level         String
+  rating        Decimal
+  studentsCount Int     @map("students_count")
+  category      String
+
+  detailDescription String
+
   parts   String
   teacher String
 
-  users Auth[]
+  status   String          @default("moderating")
+  comments AdminComments[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+}
+
+model Modules {
+  id String @id() @default(uuid())
+
+  title   String
+  lessons String
+
+  courseId String
+  course   Courses @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+}
+
+model AdminComments {
+  id String @id() @default(uuid())
+
+  text       String
+  adminEmail String @map("admin_email")
+
+  pendCourseId String
+  pendCourse   PendingCourses @relation(fields: [pendCourseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt() @map("updated_at")

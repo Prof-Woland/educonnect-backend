@@ -59,7 +59,6 @@ export class AuthService {
                 id: true,
                 login: true,
                 email: true,
-                role: true
             }
         });
 
@@ -71,7 +70,7 @@ export class AuthService {
     async authorization(dto: AuthDto, res: Response){
         const {email, password} = dto;
         this.logger.log(`Try to authorizate user: ${email}`, this.name);
-
+        this.logger.log(hash(password), this.name)
         const user = await this.prismaService.auth.findFirst({
             where:{
                 email
@@ -87,8 +86,8 @@ export class AuthService {
             this.logger.warn(`User with this login not found: ${email}`, this.name);
             throw new NotFoundException("User with this login not found");
         };
-
-        const isPasswordTrue = verify(user.password, password);
+        this.logger.log(user.password, this.name)
+        const isPasswordTrue = await verify(user.password, password);
         if(!isPasswordTrue){
             this.logger.warn(`False password: ${email}`, this.name);
             throw new NotFoundException('False password');

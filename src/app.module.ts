@@ -6,13 +6,14 @@ import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CoursesModule } from './courses/courses.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [PrismaModule, CacheModule.register({
     isGlobal: true
   }),ConfigModule.forRoot({
     isGlobal: true,
-  }), AuthModule, CoursesModule],
+  }), AuthModule, CoursesModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })

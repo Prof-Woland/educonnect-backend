@@ -15,17 +15,18 @@ export class CoursesService {
     this.logger.log('Try to create course', this.name);
     const {name, description, cost, time, level, rating, category, detailDescription, teacher, parts} = dto;
     const studentsCount = 0;
-    const excourse = await this.prismaService.courses.findFirst({
+    const excourse = await this.prismaService.pendingCourses.findFirst({
       where: {
         name
       }
     });
 
     if(excourse){
+      this.logger.warn('Course with this name is already exist', this.name);
       throw new ConflictException('Course with this name is already exist');
     };
 
-    const newCourse = await this.prismaService.courses.create({
+    const newCourse = await this.prismaService.pendingCourses.create({
       data:{
         name,
         description,
@@ -40,11 +41,12 @@ export class CoursesService {
         parts:JSON.stringify(parts)
       }
     })
-
+    this.logger.log('Successful', this.name)
     return newCourse;
   }
 
   async findAll() {
+    this.logger.log('Try to get all courses', this.name)
     const courses = await this.prismaService.courses.findMany({
       orderBy:{
         rating: 'desc',
@@ -56,11 +58,12 @@ export class CoursesService {
       throw new NotFoundException('Courses not found');
     }
 
+    this.logger.log('Successful', this.name)
     return courses
   }
 
   async findPopular() {
-    this.logger.log('Try to get pop courses', this.name)
+    this.logger.log('Try to get popular courses', this.name)
     const courses = await this.prismaService.courses.findMany({
       take: 8,
       orderBy:{
@@ -73,6 +76,7 @@ export class CoursesService {
       throw new NotFoundException('Courses not found');
     }
 
+    this.logger.log('Successful', this.name)
     return courses
   }
 
@@ -96,19 +100,20 @@ export class CoursesService {
       throw new NotFoundException('Courses not found');
     }
     
+    this.logger.log('Successful', this.name)
     return courses
   }
 
   async recording(user: Auth, dto:oneDto) {
     this.logger.log('Try to record', this.name)
     const {id} = dto
-    this.logger.log(id, this.name)
     const existCourse = await this.prismaService.courses.findFirst({
       where:{
         id: id
       }
     })
     if(!existCourse){
+      this.logger.warn('Course not found', this.name)
       throw new NotFoundException('Course with this ID was not found')
     }
 
@@ -124,6 +129,7 @@ export class CoursesService {
     });
 
     if (existingRecord) {
+      this.logger.warn('User already recorded', this.name)
       throw new ConflictException('User already recorded');
     }
     
@@ -141,10 +147,12 @@ export class CoursesService {
       }
     })
 
+    this.logger.log('Successful', this.name)
     return courseRecord
   }
 
   async findOne(idParam: any) {
+    this.logger.log('Try to get one course', this.name)
     const id = idParam.id
     const course = await this.prismaService.courses.findUnique({
       where:{
@@ -153,8 +161,10 @@ export class CoursesService {
     });
 
     if(!course){
+      this.logger.warn('Course not found', this.name)
       throw new NotFoundException('Course with this name was not found');
     }
+    this.logger.log('Successful', this.name)
     return course;
   }
 

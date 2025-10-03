@@ -141,8 +141,44 @@ exports.Prisma.CoursesScalarFieldEnum = {
   studentsCount: 'studentsCount',
   category: 'category',
   detailDescription: 'detailDescription',
+  teacher: 'teacher',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PendingCoursesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  cost: 'cost',
+  time: 'time',
+  level: 'level',
+  rating: 'rating',
+  studentsCount: 'studentsCount',
+  category: 'category',
+  detailDescription: 'detailDescription',
   parts: 'parts',
   teacher: 'teacher',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ModulesScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  lessons: 'lessons',
+  courseId: 'courseId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AdminCommentsScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  adminEmail: 'adminEmail',
+  pendCourseId: 'pendCourseId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -160,7 +196,10 @@ exports.Prisma.QueryMode = {
 
 exports.Prisma.ModelName = {
   Auth: 'Auth',
-  Courses: 'Courses'
+  Courses: 'Courses',
+  PendingCourses: 'PendingCourses',
+  Modules: 'Modules',
+  AdminComments: 'AdminComments'
 };
 
 /**

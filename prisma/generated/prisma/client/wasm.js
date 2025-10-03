@@ -113,8 +113,44 @@ exports.Prisma.CoursesScalarFieldEnum = {
   studentsCount: 'studentsCount',
   category: 'category',
   detailDescription: 'detailDescription',
+  teacher: 'teacher',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PendingCoursesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  cost: 'cost',
+  time: 'time',
+  level: 'level',
+  rating: 'rating',
+  studentsCount: 'studentsCount',
+  category: 'category',
+  detailDescription: 'detailDescription',
   parts: 'parts',
   teacher: 'teacher',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ModulesScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  lessons: 'lessons',
+  courseId: 'courseId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AdminCommentsScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  adminEmail: 'adminEmail',
+  pendCourseId: 'pendCourseId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -132,7 +168,10 @@ exports.Prisma.QueryMode = {
 
 exports.Prisma.ModelName = {
   Auth: 'Auth',
-  Courses: 'Courses'
+  Courses: 'Courses',
+  PendingCourses: 'PendingCourses',
+  Modules: 'Modules',
+  AdminComments: 'AdminComments'
 };
 /**
  * Create the Client
@@ -156,6 +195,14 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -181,13 +228,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Auth {\n  id String @id() @default(uuid())\n\n  login    String\n  email    String\n  password String\n\n  role    String    @default(\"student\")\n  courses Courses[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n\nmodel Courses {\n  id String @id() @default(uuid())\n\n  name        String\n  description String\n  cost        Decimal\n\n  time          String\n  level         String\n  rating        Decimal\n  studentsCount Int     @map(\"students_count\")\n  category      String\n\n  detailDescription String\n\n  parts   String\n  teacher String\n\n  users Auth[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n",
-  "inlineSchemaHash": "08084065df6841e80ebaa70b69ac4572ab3f4dfd184d93f83447d21372e8abfd",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\", \"debian-openssl-3.0.x\"]\n  output        = \"generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Auth {\n  id String @id() @default(uuid())\n\n  login    String\n  email    String\n  password String\n\n  role    String    @default(\"student\")\n  courses Courses[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n\nmodel Courses {\n  id String @id() @default(uuid())\n\n  name        String\n  description String\n  cost        Decimal\n\n  time          String\n  level         String\n  rating        Decimal\n  studentsCount Int     @map(\"students_count\")\n  category      String\n\n  detailDescription String\n\n  parts   Modules[]\n  teacher String\n\n  status String @default(\"published\")\n\n  users Auth[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n\nmodel PendingCourses {\n  id String @id() @default(uuid())\n\n  name        String\n  description String\n  cost        Decimal\n\n  time          String\n  level         String\n  rating        Decimal\n  studentsCount Int     @map(\"students_count\")\n  category      String\n\n  detailDescription String\n\n  parts   String\n  teacher String\n\n  status   String          @default(\"moderating\")\n  comments AdminComments[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n\nmodel Modules {\n  id String @id() @default(uuid())\n\n  title   String\n  lessons String\n\n  courseId String\n  course   Courses @relation(fields: [courseId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n\nmodel AdminComments {\n  id String @id() @default(uuid())\n\n  text       String\n  adminEmail String @map(\"admin_email\")\n\n  pendCourseId String\n  pendCourse   PendingCourses @relation(fields: [pendCourseId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt() @map(\"updated_at\")\n}\n",
+  "inlineSchemaHash": "2be7bc010d735ff69cec9c737ac0ab2ed4093e032df500e58574e5a8ebd8e7ec",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Auth\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"login\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"courses\",\"kind\":\"object\",\"type\":\"Courses\",\"relationName\":\"AuthToCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null},\"Courses\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"time\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"level\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"studentsCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"students_count\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"detailDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parts\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"teacher\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"Auth\",\"relationName\":\"AuthToCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Auth\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"login\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"courses\",\"kind\":\"object\",\"type\":\"Courses\",\"relationName\":\"AuthToCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null},\"Courses\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"time\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"level\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"studentsCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"students_count\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"detailDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parts\",\"kind\":\"object\",\"type\":\"Modules\",\"relationName\":\"CoursesToModules\"},{\"name\":\"teacher\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"Auth\",\"relationName\":\"AuthToCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null},\"PendingCourses\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"time\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"level\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"studentsCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"students_count\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"detailDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parts\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"teacher\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"AdminComments\",\"relationName\":\"AdminCommentsToPendingCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null},\"Modules\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lessons\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"courseId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"course\",\"kind\":\"object\",\"type\":\"Courses\",\"relationName\":\"CoursesToModules\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null},\"AdminComments\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminEmail\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"admin_email\"},{\"name\":\"pendCourseId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pendCourse\",\"kind\":\"object\",\"type\":\"PendingCourses\",\"relationName\":\"AdminCommentsToPendingCourses\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

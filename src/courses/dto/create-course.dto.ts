@@ -9,9 +9,9 @@ export class CreateCourseDto {
     @IsNotEmpty()
     description: string
 
-    @IsNumber()
-    @IsNotEmpty()
-    @IsPositive()
+    // @IsNumber()
+    // @IsNotEmpty()
+    // @IsPositive()
     cost: number
 
     @IsNotEmpty()
@@ -22,8 +22,8 @@ export class CreateCourseDto {
     @IsNotEmpty()
     level: string
 
-    @IsDecimal()
-    @IsNotEmpty()
+    // @IsDecimal()
+    // @IsNotEmpty()
     rating: number
 
     @IsString()
@@ -39,7 +39,7 @@ export class CreateCourseDto {
     teacher: string
 
     @IsNotEmpty()
-    parts: JSON
+    parts: string
 }
 
 export class oneDto{
